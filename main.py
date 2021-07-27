@@ -1,4 +1,5 @@
 import requests
+from twilio.rest import Client 
 
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
@@ -46,24 +47,24 @@ def getNews(fromDate, change_percent):
         sourceName = articles.json()["articles"][article]["source"]["name"]
         title = articles.json()["articles"][article]["title"]
         url = articles.json()["articles"][article]["url"]
-        message_to_send = message_to_send + f"STOCK: {STOCK} {change_percent}%\nPublished by: {sourceName}\nHeadline: {title}\nurl:{url}\n\n"
+        message_to_send = message_to_send + f"STOCK: {STOCK} {change_percent}%\nPublished by: {sourceName}\nHeadline: {title}\nurl: {url}\n\n"
     
-    print(message_to_send)
+    sendSMS(message_to_send)
 
 ## STEP 3: Use https://www.twilio.com
 # Send a seperate message with the percentage change and each article's title and description to your phone number. 
+def sendSMS (message):
+    account_sid = ""
+    auth_token = ""
+    client = Client(account_sid, auth_token)
+    receiver = "+11234567890"
+    sender = "+11234567890"
 
+    message = client.messages \
+            .create(
+                body=message,
+                from_=sender,
+                to=receiver
+            )
 
-#Optional: Format the SMS message like this: 
-"""
-TSLA: 🔺2%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-or
-"TSLA: 🔻5%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-"""
-
-# stockPrice("IBM")
-getNews("2021-07-27", -10)
+stockPrice(STOCK)
